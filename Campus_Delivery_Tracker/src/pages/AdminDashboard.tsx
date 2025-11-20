@@ -26,6 +26,10 @@ const AdminDashboard: React.FC = () => {
   const [tab, setTab] = useState(0);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const { deliveries } = useDelivery();
+  const { user } = require('@/contexts/AuthContext').useAuth();
+  if (user?.role !== 'admin') {
+    return <Layout><Typography variant="h6">Access Denied: Admins only.</Typography></Layout>;
+  }
 
   const activeDeliveries = deliveries.filter(d => 
     !['Delivered', 'Rejected'].includes(d.status)

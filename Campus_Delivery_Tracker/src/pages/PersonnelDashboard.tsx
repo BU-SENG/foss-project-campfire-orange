@@ -26,6 +26,9 @@ import { DeliveryStatus } from '@/types/delivery';
 const PersonnelDashboard: React.FC = () => {
   const { deliveries, acceptDelivery, rejectDelivery, updateDeliveryStatus } = useDelivery();
   const { user } = useAuth();
+  if (user?.role !== 'personnel') {
+    return <Layout><Typography variant="h6">Access Denied: Personnel only.</Typography></Layout>;
+  }
 
   const newRequests = deliveries.filter(d => d.status === 'Requested');
   const myDeliveries = deliveries.filter(d => d.personnelId === user?.id);
