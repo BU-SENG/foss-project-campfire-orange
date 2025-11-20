@@ -1,18 +1,27 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useRef } from 'react';
 import { Delivery, DeliveryStatus } from '../types/delivery';
 import { useAuth } from './AuthContext';
 
 interface DeliveryContextType {
   deliveries: Delivery[];
-  createDelivery: (source: string, destination: string, notes?: string, contactPhone?: string) => void;
-  updateDeliveryStatus: (deliveryId: string, status: DeliveryStatus, personnelId?: string) => void;
+  createDelivery: (
+    source: string,
+    destination: string,
+    notes?: string,
+    contactPhone?: string
+  ) => void;
+  updateDeliveryStatus: (
+    deliveryId: string,
+    status: DeliveryStatus,
+    personnelId?: string
+  ) => void;
   acceptDelivery: (deliveryId: string, personnelId: string) => void;
   rejectDelivery: (deliveryId: string) => void;
 }
 
 const DeliveryContext = createContext<DeliveryContextType | undefined>(undefined);
 
-// Mock initial deliveries
+// --- Stable Initial Deliveries ---
 const initialDeliveries: Delivery[] = [
   {
     id: '1',
@@ -40,10 +49,19 @@ const initialDeliveries: Delivery[] = [
 ];
 
 export const DeliveryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Store deliveries in state
   const [deliveries, setDeliveries] = useState<Delivery[]>(initialDeliveries);
+
+  // Logged-in user
   const { user } = useAuth();
 
-  const createDelivery = (source: string, destination: string, notes?: string, contactPhone?: string) => {
+  // --- Create Delivery ---
+  const createDelivery = (
+    source: string,
+    destination: string,
+    notes?: string,
+    contactPhone?: string
+  ) => {
     if (!user) return;
 
     const newDelivery: Delivery = {
@@ -59,36 +77,49 @@ export const DeliveryProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       contactPhone,
     };
 
-    setDeliveries([...deliveries, newDelivery]);
+    setDeliveries(prev => [...prev, newDelivery]);
   };
 
-  const updateDeliveryStatus = (deliveryId: string, status: DeliveryStatus, personnelId?: string) => {
-    setDeliveries(deliveries.map(delivery => 
-      delivery.id === deliveryId
-        ? {
-            ...delivery,
-            status,
-            updatedAt: new Date().toISOString(),
-            ...(personnelId && { personnelId }),
-          }
-        : delivery
-    ));
+  // --- Update Status ---
+  const updateDeliveryStatus = (
+    deliveryId: string,
+    status: DeliveryStatus,
+    personnelId?: string
+  ) => {
+    setDeliveries(prev =>
+      prev.map(delivery =>
+        delivery.id === deliveryId
+          ? {
+              ...delivery,
+              status,
+              ...(personnelId && { personnelId }),
+              updatedAt: new Date().toISOString(),
+            }
+          : delivery
+      )
+    );
   };
 
+  // --- Accept Delivery ---
   const acceptDelivery = (deliveryId: string, personnelId: string) => {
-    setDeliveries(deliveries.map(delivery => 
-      delivery.id === deliveryId
-        ? {
-            ...delivery,
-            status: 'Accepted' as DeliveryStatus,
-            personnelId,
-            personnelName: user?.name,
-            updatedAt: new Date().toISOString(),
-          }
-        : delivery
-    ));
+    if (!user) return;
+
+    setDeliveries(prev =>
+      prev.map(delivery =>
+        delivery.id === deliveryId
+          ? {
+              ...delivery,
+              status: 'Accepted',
+              personnelId,
+              personnelName: user.name,
+              updatedAt: new Date().toISOString(),
+            }
+          : delivery
+      )
+    );
   };
 
+  // --- Reject Delivery ---
   const rejectDelivery = (deliveryId: string) => {
     updateDeliveryStatus(deliveryId, 'Rejected');
   };
