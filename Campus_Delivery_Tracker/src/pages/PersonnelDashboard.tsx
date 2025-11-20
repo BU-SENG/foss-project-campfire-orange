@@ -17,11 +17,11 @@ import {
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
-import Layout from '@/components/Layout';
-import StatusChip from '@/components/StatusChip';
-import { useDelivery } from '@/contexts/DeliveryContext';
-import { useAuth } from '@/contexts/AuthContext';
-import { DeliveryStatus } from '@/types/delivery';
+import Layout from '../components/Layout';
+import StatusChip from '../components/StatusChip';
+import { useDelivery } from '../contexts/DeliveryContext';
+import { useAuth } from '../contexts/AuthContext';
+import { DeliveryStatus } from '../types/delivery';
 
 const PersonnelDashboard: React.FC = () => {
   const { deliveries, acceptDelivery, rejectDelivery, updateDeliveryStatus } = useDelivery();

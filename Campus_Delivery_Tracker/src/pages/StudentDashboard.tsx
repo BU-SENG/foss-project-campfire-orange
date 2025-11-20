@@ -20,10 +20,10 @@ import {
   Box,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import Layout from '@/components/Layout';
-import StatusChip from '@/components/StatusChip';
-import { useDelivery } from '@/contexts/DeliveryContext';
-import { useAuth } from '@/contexts/AuthContext';
+import Layout from '../components/Layout';
+import StatusChip from '../components/StatusChip';
+import { useDelivery } from '../contexts/DeliveryContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const StudentDashboard: React.FC = () => {
   const [open, setOpen] = useState(false);

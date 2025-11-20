@@ -10,7 +10,7 @@ import {
   Tabs,
   Tab,
 } from '@mui/material';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 
