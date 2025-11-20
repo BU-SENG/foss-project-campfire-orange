@@ -18,4 +18,5 @@ export interface Delivery {
   requestedAt: string;
   updatedAt: string;
   notes?: string;
+  contactPhone?: string;
 }
