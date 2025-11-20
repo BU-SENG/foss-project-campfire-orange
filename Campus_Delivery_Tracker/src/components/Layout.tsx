@@ -3,61 +3,78 @@ import { AppBar, Toolbar, Typography, Button, Container, Box } from '@mui/materi
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+
 interface LayoutProps {
   children: React.ReactNode;
 }
-const Layout: React.FC<LayoutProps> = ({
-  children
-}) => {
-  const {
-    user,
-    logout
-  } = useAuth();
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
-  return <Box sx={{
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100vh'
-  }}>
-      <AppBar position="static" sx={{
-      bgcolor: 'hsl(var(--primary))'
-    }}>
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+      }}
+    >
+      <AppBar
+        position="static"
+        sx={{
+          bgcolor: 'hsl(var(--primary))',
+        }}
+      >
         <Toolbar>
-          <LocalShippingIcon sx={{
-          mr: 2
-        }} />
-          <Typography variant="h6" component="div" sx={{
-          flexGrow: 1,
-          display: {
-            xs: 'none',
-            sm: 'block'
-          }
-        }}>
+          <LocalShippingIcon sx={{ mr: 2 }} />
+
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              flexGrow: 1,
+              display: { xs: 'none', sm: 'block' },
+            }}
+          >
             Campus Delivery Tracker
           </Typography>
-          {user && <>
-              <Typography variant="body1" sx={{
-            mr: 2
-          }}>
-                {user.name} ({user.role})
+
+          {user && (
+            <>
+              <Typography variant="body1" sx={{ mr: 2 }}>
+                {user.name ?? 'User'} ({user.role ?? 'role'})
               </Typography>
-              <Button color="inherit" onClick={handleLogout} className="my-px py-0 px-[11px] mx-[54px]">
+
+              <Button
+                color="inherit"
+                onClick={handleLogout}
+                sx={{ py: 0, px: 2 }}
+              >
                 Logout
               </Button>
-            </>}
+            </>
+          )}
         </Toolbar>
       </AppBar>
-      <Container maxWidth="xl" sx={{
-      mt: 4,
-      mb: 4,
-      flex: 1
-    }}>
+
+      <Container
+        maxWidth="xl"
+        sx={{
+          mt: 4,
+          mb: 4,
+          flex: 1,
+        }}
+      >
         {children}
       </Container>
-    </Box>;
+    </Box>
+  );
 };
+
 export default Layout;
