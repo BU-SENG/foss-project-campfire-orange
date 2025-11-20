@@ -4,7 +4,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./Campus_Delivery_Tracker/src/*"]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,

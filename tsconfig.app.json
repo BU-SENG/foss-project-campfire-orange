@@ -23,7 +23,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./Campus_Delivery_Tracker/src/*"]
     }
   },
   "include": ["src"]
