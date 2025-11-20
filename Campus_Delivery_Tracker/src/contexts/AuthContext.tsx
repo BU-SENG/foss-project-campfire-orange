@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 
 export type UserRole = 'student' | 'personnel' | 'admin';
 
@@ -19,8 +19,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock users for demonstration
-const mockUsers: (User & { password: string })[] = [
+// Initial mock users
+const initialMockUsers: (User & { password: string })[] = [
   { id: '1', email: 'student@campus.edu', password: 'student123', name: 'John Student', role: 'student' },
   { id: '2', email: 'personnel@campus.edu', password: 'personnel123', name: 'Jane Personnel', role: 'personnel' },
   { id: '3', email: 'admin@campus.edu', password: 'admin123', name: 'Admin User', role: 'admin' },
@@ -29,40 +29,53 @@ const mockUsers: (User & { password: string })[] = [
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
+  // Keep mockUsers stable across renders
+  const mockUsersRef = useRef(initialMockUsers);
+
   useEffect(() => {
-    // Check for stored user on mount
-    const storedUser = localStorage.getItem('campusDeliveryUser');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    try {
+      const storedUser = localStorage.getItem('campusDeliveryUser');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch {
+      localStorage.removeItem('campusDeliveryUser');
     }
   }, []);
 
   const login = async (email: string, password: string) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    const foundUser = mockUsers.find(u => u.email === email && u.password === password);
+    await new Promise(res => setTimeout(res, 500)); // simulate API call
+
+    const foundUser = mockUsersRef.current.find(
+      u => u.email === email && u.password === password
+    );
+
     if (!foundUser) {
       throw new Error('Invalid credentials');
     }
 
     const { password: _, ...userWithoutPassword } = foundUser;
+
     setUser(userWithoutPassword);
     localStorage.setItem('campusDeliveryUser', JSON.stringify(userWithoutPassword));
   };
 
   const register = async (email: string, password: string, name: string) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+    await new Promise(res => setTimeout(res, 500)); // simulate API call
+
+    if (mockUsersRef.current.some(u => u.email === email)) {
+      throw new Error('Email already exists');
+    }
+
     const newUser: User = {
-      id: String(mockUsers.length + 1),
+      id: String(mockUsersRef.current.length + 1),
       email,
       name,
       role: 'student',
     };
-    
-    mockUsers.push({ ...newUser, password });
+
+    mockUsersRef.current.push({ ...newUser, password });
+
     setUser(newUser);
     localStorage.setItem('campusDeliveryUser', JSON.stringify(newUser));
   };
@@ -73,16 +86,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        register,
+        logout,
+        isAuthenticated: !!user,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
 };
