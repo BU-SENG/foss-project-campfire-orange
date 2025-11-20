@@ -32,6 +32,9 @@ const StudentDashboard: React.FC = () => {
   const [notes, setNotes] = useState('');
   const { deliveries, createDelivery } = useDelivery();
   const { user } = useAuth();
+  if (user?.role !== 'student') {
+    return <Layout><Typography variant="h6">Access Denied: Students only.</Typography></Layout>;
+  }
 
   const myDeliveries = deliveries.filter(d => d.studentId === user?.id);
 
